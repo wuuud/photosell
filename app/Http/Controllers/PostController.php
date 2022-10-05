@@ -18,21 +18,22 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(PostRequest $request, Category $category)
+    public function index(Request $request, Category $category)
     {
-        $posts = Post::with('user')->latest()->paginate(8);
+        
         $categories = Category::all();
         
-        // 検索機能
-        $key = $request->key;
+        // 検索機能https://qiita.com/hinako_n/items/7729aa9fec522c517f2a
+        $key = $request->input('key');
         $query = Post::query();
         if (!empty($key)) {
-            $query->where('title', 'like', '%' . $key . '%')
-                ->orWhere('body', 'like', '%' . $key . '%');
+            $query->where('title', 'LIKE', '%' . $key . '%');
+                // ->orWhere('body', 'like', '%' . $key . '%');
         }
-        $posts = $query->orderBy('created_at', 'desc')->paginate(10);
+        // dd($query);
+        $posts = Post::with('user')->latest()->paginate(8);
         return view('posts.index')
-            ->with(compact('posts', 'category', 'categories'));
+            ->with(compact('posts', 'categories', 'key'));
     }
 
     /**

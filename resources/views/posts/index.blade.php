@@ -7,16 +7,27 @@
 
 
                 <div class="post-search-form col-md-6">
-                    <form class="form-inline" action="{{ route('posts.index') }}">
+                    <form class="form-inline" action="{{ route('posts.index') }}" method="GET">
+                        @csrf
                         <div class="form-group">
-                            <input type="text" name="key" class="form-control" placeholder="キーワードを入力">
+                            <input type="text" name="key" value="{{ $key }}" class="form-control"
+                                placeholder="キーワードを入力">
+
+                            <input type="submit" value="検索"
+                                class="bg-emerald-900 hover:bg-emerald-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-20 mr-2">
+                            
                         </div>
-                        <input type="submit" value="検索" class="btn btn-info">
                     </form>
                 </div>
-
-
-
+                <div>
+                    {{-- //* 保存されているレコードを一覧表示　*//  --}}
+                    @forelse ($posts as $post)
+                        <a href="{{ route('posts.show', $post) }}">{{ $post->title }}</a>
+                    @empty
+                        <p>No posts!!</p>
+                    @endforelse
+                    </table>
+                </div>
 
                 @foreach ($posts as $post)
                     <article class="w-full px-4 md:w-1/2 text-xl text-gray-800 leading-normal">
