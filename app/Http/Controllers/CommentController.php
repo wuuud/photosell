@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\CommentRequest;
+use App\Models\Post;
+use App\Models\Comment;
+use Illuminate\Support\Facades\DB;
 
 class CommentController extends Controller
 {
@@ -21,21 +24,42 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Post $post)
     {
-        //
+        return view('comments.create')->with(compact('post'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\CommentRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CommentRequest $request, Post $post)
     {
-        //
+        $comment = new Comment($request->all());
+        $comment->user_id = $request->user()->id;
+
+        // トランザクション開始
+        DB::beginTransaction();
+        try {
+            // 登録
+            // Postクラスにcommentsのリレーションを設定しているので、$post->comments()->($comment)で保存する
+            // リレーションの機能を使用することで、$comment->post_id = $post_idように設定しなくても良い
+            $post->comments()->save($comment);
+            // トランザクション終了(成功)
+            DB::commit();
+        } catch (\Exception $e) {
+            // トランザクション終了(失敗)
+            DB::rollback();
+            return back()->withInput()->withErrors($e->getMessage());
+        }
+
+        return redirect()
+            ->route('posts.show', $post)
+            ->with('notice', 'コメントを登録しました');
     }
+
 
     /**
      * Display the specified resource.
@@ -54,21 +78,43 @@ class CommentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post, Comment $comment)
     {
-        //
+        return view('comments.edit')->with(compact('post', 'comment'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\CommentRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CommentRequest $request, Post $post, Comment $comment)
     {
-        //
+        if ($request->user()->cannot('update', $comment)) {
+            return redirect()->route('posts.show', $post)
+                ->withErrors('自分のコメント以外は更新できません');
+        }
+
+        $comment->fill($request->all());
+
+        // トランザクション開始
+        DB::beginTransaction();
+        try {
+            // 更新
+            $comment->save();
+
+            // トランザクション終了(成功)
+            DB::commit();
+        } catch (\Exception $e) {
+            // トランザクション終了(失敗)
+            DB::rollback();
+            return back()->withInput()->withErrors($e->getMessage());
+        }
+
+        return redirect()->route('posts.show', $post)
+            ->with('notice', 'コメントを更新しました');
     }
 
     /**
@@ -77,8 +123,22 @@ class CommentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post, Comment $comment)
     {
-        //
+        // トランザクション開始
+        DB::beginTransaction();
+        try {
+            $comment->delete();
+
+            // トランザクション終了(成功)
+            DB::commit();
+        } catch (\Exception $e) {
+            // トランザクション終了(失敗)
+            DB::rollback();
+            return back()->withInput()->withErrors($e->getMessage());
+        }
+
+        return redirect()->route('posts.show', $post)
+            ->with('notice', 'コメントを削除しました');
     }
 }

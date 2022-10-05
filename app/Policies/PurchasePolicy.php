@@ -30,7 +30,7 @@ class PurchasePolicy
      */
     public function view(User $user, Purchase $purchase)
     {
-        //
+        
     }
 
     /**

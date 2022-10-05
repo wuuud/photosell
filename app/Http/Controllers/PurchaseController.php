@@ -8,6 +8,18 @@ use App\Models\Purchase;
 
 class PurchaseController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    // public function index(Post $post)
+    // {
+    //     // $posts = Post::with('user')->latest()->paginate(8);
+    //     $purchases = Purchase::all();
+    //     return view('posts.purchases.index')
+    //         ->with(compact('post', 'purchases'));
+    // }
 
     /**
      * Store a newly created resource in storage.
@@ -20,6 +32,7 @@ class PurchaseController extends Controller
         $purchase = new Purchase;
         $purchase->user_id = $request->user()->id;
         $purchase->post_id = $post->id;
+        $purchase->category_id = $post->category_id;
         $purchase->save();
         return back();
     }
@@ -36,7 +49,7 @@ class PurchaseController extends Controller
     //     $post = Post::find();
     //     $user = $request->user()->id;
     //     $purchase = Purchase::where('post_id',$post->id)
-    //                 ->where('uder_id', $user)
+    //                 ->where('user_id', $user)
     //                 ->first();
     //     $purchase->delete();
     //     return back();

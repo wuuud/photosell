@@ -3,7 +3,7 @@
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\CommentController;
-use GuzzleHttp\Middleware;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,7 +45,9 @@ Route::resource('posts.comments', CommentController::class)
     ->middleware('auth');
 
 Route::resource('posts.purchases', PurchaseController::class)
-    ->only(['destroy', 'store'])
+    ->only(['index', 'destroy', 'store'])
     ->middleware('auth');
 
-
+Route::resource('posts.comments', CommentController::class)
+    ->only(['edit', 'create', 'update', 'destroy', 'store'])
+    ->middleware('auth');

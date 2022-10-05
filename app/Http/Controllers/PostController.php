@@ -18,18 +18,21 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Category $category)
+    public function index(PostRequest $request, Category $category)
     {
         $posts = Post::with('user')->latest()->paginate(8);
-        // 自分だけの作品一覧http://taustation.com/laravel-acquiring-data-of-logged-in-user/
-        // $posts = Post::where('user_id', auth()->user()->id)->latest()->paginate(8);
-
-        // $price1 = $posts->category_id[0];
-        // $price2 = $posts->category_id[1];
-        // $price3 = $posts->category_id[2];
-        // $total = $price1*500 + $price2*1000 + $price3*2000; 
-        // return view('posts.index')->with(compact('posts', 'total'));
-        return view('posts.index')->with(compact('posts'));
+        $categories = Category::all();
+        
+        // 検索機能
+        $key = $request->key;
+        $query = Post::query();
+        if (!empty($key)) {
+            $query->where('title', 'like', '%' . $key . '%')
+                ->orWhere('body', 'like', '%' . $key . '%');
+        }
+        $posts = $query->orderBy('created_at', 'desc')->paginate(10);
+        return view('posts.index')
+            ->with(compact('posts', 'category', 'categories'));
     }
 
     /**
@@ -94,15 +97,21 @@ class PostController extends Controller
     //             ->with(compact('post'));
     //     }
     // }
-    public function show(Post $post)
+    public function show($id)
     {
+        //1.買う 
         if (Auth::user()) {
             // $post = Post::where('user_id', auth()->user()->id)->latest()->paginate(8);
+            $post = Post::find($id);
             $purchase = Purchase::where('post_id', $post->id)
                 ->where('user_id', auth()->user()->id)->first();
+            // 2.コメント
+            $post = Post::with(['user'])->find($id);
+            $comments = $post->comments()->latest()->get()->load(['user']);
             return view('posts.show')
-                ->with(compact('post', 'purchase'));
+                ->with(compact('post', 'purchase', 'comments'));
         } else {
+            $post = Post::find($id);
             return view('posts.show')
                 ->with(compact('post'));
         }
@@ -127,9 +136,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(PostRequest $request, Post $post)
+    public function update(PostRequest $request, $id)
     {
-        $post = new Post($request->all());
+        $post = Post::find($id);
 
         if ($request->user()->cannot('update', $post)) {
             return redirect()
@@ -137,9 +146,6 @@ class PostController extends Controller
                 ->withErrors('自分の作品は更新できません');
         }
         
-
-        // $post->user_id = $request->user()->id;
-
         $file = $request->file('image');
         if ($file) {
             $delete_file_path = $post->image_path;

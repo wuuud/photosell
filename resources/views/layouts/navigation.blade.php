@@ -22,6 +22,12 @@
                         {{ __('register') }}
                     </x-nav-link>
                 </div>
+                <!-- Navigation Links  カートに入れる 認証ユーザーのみ-->
+                {{-- <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link :href="route('posts.purchases.index', $post)" :active="request()->routeIs('dashboard')">
+                        {{ __('purchase') }}
+                    </x-nav-link>
+                </div> --}}
 
                 @endauth
             </div>

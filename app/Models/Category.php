@@ -13,4 +13,8 @@ class Category extends Model
         'price'
     ];
 
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
 }
