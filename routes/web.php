@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,41 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', function () {
-//       return view('first');
-//   })->name('root');
-
-
-Route::get('/', [PostController::class, 'index'])
-    ->name('root');
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})  
-    ->middleware(['auth'])
-    ->name('dashboard');
-
-require __DIR__.'/auth.php';
-
-Route::get('/posts/mypage', [PostController::class, 'mypage'])
-    ->middleware('auth')
-    ->name('posts.mypage');
-
-Route::resource('posts', PostController::class)
-    ->only(['edit', 'create', 'update', 'destroy', 'store'])
-    ->middleware('auth');
-
-Route::resource('posts', PostController::class)
-    ->only(['index', 'show']);
-
-Route::resource('posts.comments', CommentController::class)
-    ->only(['edit', 'create', 'update', 'destroy', 'store'])
-    ->middleware('auth');
-
-Route::resource('posts.purchases', PurchaseController::class)
-    ->only(['index', 'destroy', 'store'])
-    ->middleware('auth');
-
-Route::resource('posts.comments', CommentController::class)
-    ->only(['edit', 'create', 'update', 'destroy', 'store'])
-    ->middleware('auth');
+Route::get('/', function () {
+    return view('welcome');
+});
