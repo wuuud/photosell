@@ -13,13 +13,13 @@ class PurchaseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    // public function index(Post $post)
-    // {
-    //     // $posts = Post::with('user')->latest()->paginate(8);
-    //     $purchases = Purchase::all();
-    //     return view('posts.purchases.index')
-    //         ->with(compact('post', 'purchases'));
-    // }
+    public function index(Post $post)
+    {
+        // $posts = Post::with('user')->latest()->paginate(8);
+        $purchases = Purchase::all();
+        return view('posts.index')
+            ->with(compact('post', 'purchases'));
+    }
 
     /**
      * Store a newly created resource in storage.

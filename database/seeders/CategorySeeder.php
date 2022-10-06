@@ -25,6 +25,12 @@ class CategorySeeder extends Seeder
             'price' => '2,000',
         ]
         ];
-        DB::table('categories')->insert($param);
+        // DB::table('categories')->insert($param);
+        // if (!DB::table('categories')->first()){
+        // DB::table('categories')->insert([
+        // ['price' => '500'],
+        // ['price' => '1,000'],
+        // ['price' => '2,000'],
+        // ]);
     }
 }
