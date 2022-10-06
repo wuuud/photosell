@@ -3,7 +3,6 @@
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,6 +31,10 @@ Route::get('/dashboard', function () {
     ->name('dashboard');
 
 require __DIR__.'/auth.php';
+
+Route::get('/posts/mypage', [PostController::class, 'mypage'])
+    ->middleware('auth')
+    ->name('posts.mypage');
 
 Route::resource('posts', PostController::class)
     ->only(['edit', 'create', 'update', 'destroy', 'store'])

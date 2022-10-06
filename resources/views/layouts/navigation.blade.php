@@ -5,25 +5,27 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <x-application-logo class="block h-10 w-auto fill-current text-gray-600" />
+                    <a href="{{ route('root') }}">
+                        <x-application-logo class="block h-10 w-auto fill-current text-gray-600" />
+                    </a>
                 </div>
 
-                <!-- Navigation Links  トップ -->
+                <!-- Navigation Links  マイページトップ -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('root')" :active="request()->routeIs('dashboard')">
-                        {{ __('index') }}
+                    <x-nav-link :href="route('posts.mypage')" :active="request()->routeIs('dashboard')">
+                        {{ __('MyPage') }}
                     </x-nav-link>
                 </div>
                 <!-- Navigation Links  新規作成 認証ユーザーのみ-->
                 @auth
-                    
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('posts.create')" :active="request()->routeIs('dashboard')">
-                        {{ __('register') }}
-                    </x-nav-link>
-                </div>
-                <!-- Navigation Links  カートに入れる 認証ユーザーのみ-->
-                {{-- <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                        <x-nav-link :href="route('posts.create')" :active="request()->routeIs('dashboard')">
+                            {{ __('register') }}
+                        </x-nav-link>
+                    </div>
+                    <!-- Navigation Links  カートに入れる 認証ユーザーのみ-->
+                    {{-- <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('posts.purchases.index', $post)" :active="request()->routeIs('dashboard')">
                         {{ __('purchase') }}
                     </x-nav-link>
@@ -77,7 +79,7 @@
                                 @csrf
                                 <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
-                                              this.closest('form').submit();">
+                                        this.closest('form').submit();">
                                     {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
@@ -136,41 +138,41 @@
                     </x-responsive-nav-link>
                 </form>
             </div> --}}
-        @auth
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
+            @auth
+                <div class="px-4">
+                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
+                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                </div>
 
-            <div class="mt-3 space-y-1">
-                <!-- Authentication -->
-                <x-responsive-nav-link :href="route('posts.create')">
-                    {{ __('Create Post') }}
-                </x-responsive-nav-link>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-responsive-nav-link :href="route('logout')"
-                        onclick="event.preventDefault();
-                                       this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                <div class="mt-3 space-y-1">
+                    <!-- Authentication -->
+                    <x-responsive-nav-link :href="route('posts.create')">
+                        {{ __('Create Post') }}
                     </x-responsive-nav-link>
-                </form>
-            </div>
-        @else
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">guest</div>
-            </div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <x-responsive-nav-link :href="route('logout')"
+                            onclick="event.preventDefault();
+                                    this.closest('form').submit();">
+                            {{ __('Log Out') }}
+                        </x-responsive-nav-link>
+                    </form>
+                </div>
+            @else
+                <div class="px-4">
+                    <div class="font-medium text-base text-gray-800">guest</div>
+                </div>
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('register')">
-                    {{ __('Sign Up') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('login')">
-                    {{ __('Log In') }}
-                </x-responsive-nav-link>
-            </div>
-        @endauth
+                <div class="mt-3 space-y-1">
+                    <x-responsive-nav-link :href="route('register')">
+                        {{ __('Sign Up') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('login')">
+                        {{ __('Log In') }}
+                    </x-responsive-nav-link>
+                </div>
+            @endauth
 
-    </div>
+        </div>
     </div>
 </nav>

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
 
 class Post extends Model
 {
@@ -17,6 +18,13 @@ class Post extends Model
         'image',
         'category_id',
     ];
+
+    public function scopeSearch(Builder $query, $search)
+    {
+        if (!empty($search['title'])) {
+            $query->where('title', 'like', '%' . $search['title'] . '%');
+        }
+    }
 
     public function user()
     {
@@ -42,18 +50,10 @@ class Post extends Model
         return 'images/posts/' . $this->image;
     }
 
-
     // 開始時刻の日付
     public function getStartDateAttribute()
     {
         return (new Carbon($this->start))->toDateString();
     }
 
-    // 開始時刻の時刻
-    public function getStartTimeAttribute()
-    {
-        return date_parse_from_format('%Y-%m-%d %H:%i', $this->start)["hour"]
-            ? (new Carbon($this->start))->toTimeString()
-            : '';
-    }
 }

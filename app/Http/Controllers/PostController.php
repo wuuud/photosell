@@ -18,22 +18,17 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, Category $category)
+    public function index(Request $request)
     {
-        
         $categories = Category::all();
-        
+
         // 検索機能https://qiita.com/hinako_n/items/7729aa9fec522c517f2a
-        $key = $request->input('key');
-        $query = Post::query();
-        if (!empty($key)) {
-            $query->where('title', 'LIKE', '%' . $key . '%');
-                // ->orWhere('body', 'like', '%' . $key . '%');
-        }
-        // dd($query);
-        $posts = Post::with('user')->latest()->paginate(8);
-        return view('posts.index')
-            ->with(compact('posts', 'categories', 'key'));
+        $title = $request->title;
+        // dd($request->query());
+        $params = $request->query();
+        $posts = Post::search($params)->latest()->paginate(4);
+        $posts->appends(compact('title'));
+        return view('posts.index', compact('posts'));
     }
 
     /**
@@ -83,21 +78,6 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    // public function show(Post $post)
-    // {
-    //     // $post = new Post($request->all());
-    //     // $post->category_id = $category->id;
-    //     if (Auth::user()) {
-    //         // $categories = Category::all();
-    //         $purchase = Purchase::where('post_id', $post->id)
-    //             ->where('user_id', auth()->user()->id)->first();
-    //         return view('posts.show')
-    //             ->with(compact('post', 'purchase'));
-    //     } else {
-    //         return view('posts.show')
-    //             ->with(compact('post'));
-    //     }
-    // }
     public function show($id)
     {
         //1.買う 
@@ -146,7 +126,7 @@ class PostController extends Controller
                 ->route('posts.show', $post)
                 ->withErrors('自分の作品は更新できません');
         }
-        
+
         $file = $request->file('image');
         if ($file) {
             $delete_file_path = $post->image_path;
@@ -203,5 +183,22 @@ class PostController extends Controller
     private static function createFileName($file)
     {
         return date('YmdHis') . '_' . $file->getClientOriginalName();
+    }
+
+    public function MyPage()
+    {
+        // 自分だけの作品一覧http://taustation.com/laravel-acquiring-data-of-logged-in-user/
+        $posts = Post::where('user_id', auth()->user()->id)
+                    ->latest()
+                    ->paginate(4);
+        // 売上合計
+        // $post = Post::where('user_id', auth()->user()->id)
+        //             ->first();
+        
+        // $price = $post->category->price;
+        // $categories = Category::where('category_id', $post->category_id)
+        //             ->latest()
+        //             ->paginate(4);
+        return view('posts.mypage')->with(compact('posts'));
     }
 }

@@ -1,1 +1,2 @@
-<h1 class="text-sm">Photo Sell</h1>
+<h1 class="text-xl">Photo Sell</h1>
+
